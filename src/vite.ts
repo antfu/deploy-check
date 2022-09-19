@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 import type { Plugin, ResolvedConfig } from 'vite'
-import type { Options } from '.'
+import type { Options } from './types'
 import { printErrorLogs, serveAndCheck } from '.'
 
 export default function VitePluginDeployCheck(
