@@ -2,28 +2,35 @@
 import { chromium } from 'playwright'
 import sirv from 'sirv'
 import polka from 'polka'
+import c from 'picocolors'
+
+export type WaitUntil = 'load' | 'domcontentloaded' | 'networkidle' | 'commit'
 
 export interface Options {
   servePath: string
   port?: number
+  waitUntil?: WaitUntil
 }
 
-export interface LogError {
+export interface ErrorLog {
   type: 'error'
+  timestamp: number
   error: unknown
 }
 
-export interface LogConsole {
+export interface ConsoleErrorLog {
   type: 'console'
+  timestamp: number
   arguments: unknown[]
 }
 
-export type RuntimeLog = LogError | LogConsole
+export type RuntimeErrorLog = ErrorLog | ConsoleErrorLog
 
 export async function deployCheck(options: Options) {
   const {
     port = 8238,
     servePath,
+    waitUntil = 'networkidle',
   } = options
 
   const URL = `http://localhost:${port}`
@@ -41,24 +48,26 @@ export async function deployCheck(options: Options) {
   const page = await browser.newPage()
   console.log('> New page created')
 
-  const errorLogs: RuntimeLog[] = []
+  const errorLogs: RuntimeErrorLog[] = []
 
-  page.on('console', (message) => {
+  page.on('console', async (message) => {
     if (message.type() === 'error') {
       errorLogs.push({
         type: 'console',
-        arguments: message.args(),
+        timestamp: Date.now(),
+        arguments: await Promise.all(message.args().map(i => i.jsonValue())),
       })
     }
   })
   page.on('pageerror', (err) => {
     errorLogs.push({
       type: 'error',
+      timestamp: Date.now(),
       error: err,
     })
   })
 
-  await page.goto(URL)
+  await page.goto(URL, { waitUntil })
   console.log('> Navigated')
 
   Promise.all([
@@ -69,3 +78,16 @@ export async function deployCheck(options: Options) {
   return errorLogs
 }
 
+export function printErrorLogs(logs: RuntimeErrorLog[]) {
+  console.error()
+  console.error(c.inverse(c.bold(c.red(' DEPLOY CHECK '))) + c.red(` ${logs.length} Runtime errors found`))
+  console.error()
+  logs.forEach((log, idx) => {
+    console.error(c.yellow(`---------- ${c.gray(new Date(log.timestamp).toLocaleTimeString())} Error ${idx + 1} ---------`))
+    if (log.type === 'error')
+      console.error(log.error)
+
+    else
+      console.error(...log.arguments)
+  })
+}
