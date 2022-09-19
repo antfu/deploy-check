@@ -68,7 +68,6 @@
     "debug": "^4.3.4",
     "picocolors": "^1.0.0",
     "playwright": "^1.25.2",
-    "polka": "^0.5.2",
     "sirv": "^2.0.2"
   }
 }

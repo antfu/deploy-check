@@ -3,6 +3,7 @@ export type WaitUntil = 'load' | 'domcontentloaded' | 'networkidle' | 'commit'
 export interface Options {
   servePath: string
   port?: number
+  host?: string
   waitUntil?: WaitUntil
 }
 

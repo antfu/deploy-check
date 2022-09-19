@@ -28,9 +28,7 @@ export default function VitePluginDeployCheck(
           printErrorLogs(logs)
 
           if (logs.length)
-            process.exit(1)
-          else
-            process.exit(0)
+            process.exitCode = 1
         }
 
         setTimeout(() => {

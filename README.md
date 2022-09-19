@@ -11,6 +11,7 @@ Prevent runtime errors earlier in CI. **WIP**
 - [ ] Support custom server
 - [ ] Nuxt intergration
 - [ ] GitHub Actions
+- [ ] Patterns to ignore
 
 ## Sponsors
 
