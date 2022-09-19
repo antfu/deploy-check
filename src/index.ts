@@ -3,6 +3,9 @@ import { chromium } from 'playwright'
 import sirv from 'sirv'
 import polka from 'polka'
 import c from 'picocolors'
+import createDebug from 'debug'
+
+const debug = createDebug('deploy-check')
 
 export type WaitUntil = 'load' | 'domcontentloaded' | 'networkidle' | 'commit'
 
@@ -44,13 +47,13 @@ export async function serveAndCheck(options: Options) {
     .listen(port, (err: any) => {
       if (err)
         throw err
-      // console.log(`> Served on ${URL}`)
+      debug(`> Served on ${URL}`)
     })
 
   const browser = await chromium.launch()
-  // console.log('> Browser initialed')
+  debug('> Browser initialed')
   const page = await browser.newPage()
-  // console.log('> New page created')
+  debug('> New page created')
 
   const errorLogs: RuntimeErrorLog[] = []
 
@@ -72,7 +75,7 @@ export async function serveAndCheck(options: Options) {
   })
 
   await page.goto(URL, { waitUntil })
-  // console.log('> Navigated')
+  debug('> Navigated')
 
   Promise.all([
     page.close(),

@@ -2,6 +2,13 @@
 
 [![NPM version](https://img.shields.io/npm/v/deploy-check?color=a1b858&label=)](https://www.npmjs.com/package/deploy-check)
 
+## TODO
+
+- [ ] Support routers for multiple entries test
+- [ ] Support custom server
+- [ ] Nuxt intergration
+- [ ] GitHub Actions
+
 ## Sponsors
 
 <p align="center">
