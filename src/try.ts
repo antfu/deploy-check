@@ -1,11 +1,11 @@
 import { resolve } from 'path'
 import { fileURLToPath } from 'url'
-import { deployCheck, printErrorLogs } from '.'
+import { printErrorLogs, serveAndCheck } from '.'
 
 const root = resolve(fileURLToPath(import.meta.url), '../..')
 const servePath = resolve(root, 'playground/dist')
 
-const logs = await deployCheck({
+const logs = await serveAndCheck({
   servePath,
 })
 

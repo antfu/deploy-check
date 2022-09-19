@@ -26,7 +26,7 @@ export interface ConsoleErrorLog {
 
 export type RuntimeErrorLog = ErrorLog | ConsoleErrorLog
 
-export async function deployCheck(options: Options) {
+export async function serveAndCheck(options: Options) {
   const {
     port = 8238,
     servePath,
@@ -36,17 +36,21 @@ export async function deployCheck(options: Options) {
   const URL = `http://localhost:${port}`
 
   polka()
-    .use(sirv(servePath))
+    .use(sirv(servePath, {
+      dev: true,
+      single: true,
+      dotfiles: true,
+    }))
     .listen(port, (err: any) => {
       if (err)
         throw err
-      console.log(`> Served on ${URL}`)
+      // console.log(`> Served on ${URL}`)
     })
 
   const browser = await chromium.launch()
-  console.log('> Browser initialed')
+  // console.log('> Browser initialed')
   const page = await browser.newPage()
-  console.log('> New page created')
+  // console.log('> New page created')
 
   const errorLogs: RuntimeErrorLog[] = []
 
@@ -68,7 +72,7 @@ export async function deployCheck(options: Options) {
   })
 
   await page.goto(URL, { waitUntil })
-  console.log('> Navigated')
+  // console.log('> Navigated')
 
   Promise.all([
     page.close(),
@@ -79,6 +83,12 @@ export async function deployCheck(options: Options) {
 }
 
 export function printErrorLogs(logs: RuntimeErrorLog[]) {
+  if (!logs.length) {
+    console.log()
+    console.log(c.inverse(c.bold(c.green(' DEPLOY CHECK '))) + c.green(' No runtime errors found'))
+    console.log()
+    return
+  }
   console.error()
   console.error(c.inverse(c.bold(c.red(' DEPLOY CHECK '))) + c.red(` ${logs.length} Runtime errors found`))
   console.error()

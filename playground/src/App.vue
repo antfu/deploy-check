@@ -3,7 +3,7 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import HelloWorld from './components/HelloWorld.vue'
 
-throw 'In Vue'
+// throw 'In Vue'
 </script>
 
 <template>
