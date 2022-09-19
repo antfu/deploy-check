@@ -2,9 +2,12 @@
 
 [![NPM version](https://img.shields.io/npm/v/deploy-check?color=a1b858&label=)](https://www.npmjs.com/package/deploy-check)
 
+Prevent runtime errors earlier in CI. **WIP** 
+
 ## TODO
 
 - [ ] Support routers for multiple entries test
+- [ ] Follow links in DOM
 - [ ] Support custom server
 - [ ] Nuxt intergration
 - [ ] GitHub Actions
