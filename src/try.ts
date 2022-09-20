@@ -1,12 +1,13 @@
 import { resolve } from 'path'
 import { fileURLToPath } from 'url'
-import { printErrorLogs, serveAndCheck } from '.'
+import { printErrorLogs } from './log'
+import { serveAndCheck } from '.'
 
 const root = resolve(fileURLToPath(import.meta.url), '../..')
-const servePath = resolve(root, 'playground/dist')
+const serve = resolve(root, 'playground/dist')
 
 const logs = await serveAndCheck({
-  servePath,
+  serve,
 })
 
 if (logs.length) {

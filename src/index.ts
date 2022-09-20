@@ -1,22 +1,28 @@
-/* eslint-disable no-console */
 import http from 'http'
 import { chromium } from 'playwright'
 import sirv from 'sirv'
-import c from 'picocolors'
 import createDebug from 'debug'
-import type { Options, RuntimeErrorLog } from './types'
+import type { CheckOptions, RuntimeErrorLog, ServeOptions } from './types'
 
 const debug = createDebug('deploy-check')
 
-export async function serveAndCheck(options: Options) {
+export function serve(options: string | ServeOptions) {
+  if (typeof options === 'string') {
+    options = {
+      static: options,
+    }
+  }
+
   const {
+    basePath = '/',
+    static: servePath,
+    // TODO:
+    // script,
     port = 8238,
     host = '127.0.0.1',
-    servePath,
-    waitUntil = 'networkidle',
   } = options
 
-  const URL = `http://${host}:${port}`
+  const baseUrl = `http://${host}:${port}${basePath}`
 
   const serve = sirv(servePath, {
     dev: true,
@@ -26,8 +32,29 @@ export async function serveAndCheck(options: Options) {
   const server = http.createServer((req, res) => {
     serve(req, res)
   })
-
   server.listen(port, host)
+
+  return {
+    baseUrl,
+    stop() {
+      return server.close()
+    },
+  }
+}
+
+export async function serveAndCheck(options: CheckOptions) {
+  const {
+    collect,
+  } = options
+
+  const {
+    waitUntil = 'networkidle',
+    pageError: collectPageError = true,
+    consoleError: collectConsoleError = true,
+    consoleWarn: collectConsoleWarn = true,
+  } = collect || {}
+
+  const { stop: stopServe, baseUrl } = serve(options.serve)
 
   const browser = await chromium.launch()
   debug('> Browser initialed')
@@ -37,46 +64,42 @@ export async function serveAndCheck(options: Options) {
   const errorLogs: RuntimeErrorLog[] = []
 
   page.on('console', async (message) => {
-    if (message.type() === 'error') {
+    if (collectConsoleError && message.type() === 'error') {
       errorLogs.push({
-        type: 'console',
+        type: 'console-error',
+        route: page.url(),
+        timestamp: Date.now(),
+        arguments: await Promise.all(message.args().map(i => i.jsonValue())),
+      })
+    }
+    else if (collectConsoleWarn && message.type() === 'warn') {
+      errorLogs.push({
+        type: 'console-warn',
+        route: page.url(),
         timestamp: Date.now(),
         arguments: await Promise.all(message.args().map(i => i.jsonValue())),
       })
     }
   })
   page.on('pageerror', (err) => {
-    errorLogs.push({
-      type: 'error',
-      timestamp: Date.now(),
-      error: err,
-    })
+    if (collectPageError) {
+      errorLogs.push({
+        type: 'page-error',
+        route: page.url(),
+        timestamp: Date.now(),
+        error: err,
+      })
+    }
   })
 
-  await page.goto(URL, { waitUntil })
+  await page.goto(baseUrl, { waitUntil })
   debug(`> Navigate to ${URL}`)
 
   await Promise.all([
     browser.close(),
-    server.close(),
+    stopServe(),
   ])
 
   return errorLogs
 }
 
-export function printErrorLogs(logs: RuntimeErrorLog[]) {
-  if (!logs.length) {
-    console.log()
-    console.log(c.inverse(c.bold(c.green(' DEPLOY CHECK '))) + c.green(' No runtime errors found'))
-    return
-  }
-  console.error()
-  console.error(c.inverse(c.bold(c.red(' DEPLOY CHECK '))) + c.red(` ${logs.length} Runtime errors found`))
-  logs.forEach((log, idx) => {
-    console.error(c.yellow(`\n--- Error ${idx + 1} -------- ${c.gray(new Date(log.timestamp).toLocaleTimeString())} ---`))
-    if (log.type === 'error')
-      console.error(log.error)
-    else
-      console.error(...log.arguments)
-  })
-}

@@ -1,10 +1,11 @@
 import { resolve } from 'path'
 import type { Plugin, ResolvedConfig } from 'vite'
-import type { Options } from './types'
-import { printErrorLogs, serveAndCheck } from '.'
+import { printErrorLogs } from './log'
+import type { CheckOptions } from './types'
+import { serveAndCheck } from '.'
 
 export default function VitePluginDeployCheck(
-  options?: Partial<Options>,
+  options?: Partial<CheckOptions>,
 ): Plugin {
   let config: ResolvedConfig = undefined!
 
@@ -21,7 +22,7 @@ export default function VitePluginDeployCheck(
       handler() {
         async function deployCheck() {
           const logs = await serveAndCheck({
-            servePath: resolve(config.root, config.build.outDir),
+            serve: resolve(config.root, config.build.outDir),
             ...options,
           })
 
