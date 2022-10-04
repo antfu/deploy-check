@@ -40,7 +40,7 @@
     "build": "unbuild",
     "dev": "unbuild --stub",
     "lint": "eslint .",
-    "play": "nr -C playground build",
+    "play": "DEBUG=deploy-check nr -C playground build",
     "prepublishOnly": "nr build",
     "release": "bumpp && npm publish",
     "start": "esno src/index.ts",
@@ -54,7 +54,8 @@
     "debug": "^4.3.4",
     "picocolors": "^1.0.0",
     "playwright": "^1.25.2",
-    "sirv": "^2.0.2"
+    "sirv": "^2.0.2",
+    "ufo": "^0.8.5"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.27.0",

@@ -40,13 +40,25 @@ export interface RoutesOptions {
    */
   routes?: string[]
   /**
+   * Follow client links to auto descover routes
+   */
+  followLinks?: boolean
+  /**
    * @default 5
    */
   maxDepth?: number
+  /**
+   * @default 1000
+   */
+  maxPages?: number
+  /**
+   * Ignore query when dedupe with existing routes
+   * @default true
+   */
+  ignoreQuery?: boolean
 }
 
 export interface CheckOptions {
-
   serve: string | ServeOptions
   collect?: CollectOptions
   routes?: RoutesOptions
