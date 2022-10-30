@@ -99,7 +99,7 @@ export async function serveAndCheck(options: CheckOptions) {
           arguments: await Promise.all(message.args().map(i => i.jsonValue())),
         })
       }
-      else if (collectConsoleWarn && message.type() === 'warn') {
+      else if (collectConsoleWarn && message.type() === 'warning') {
         errorLogs.push({
           type: 'console-warn',
           route,
