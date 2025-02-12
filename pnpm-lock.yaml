@@ -10,11 +10,11 @@ importers:
       '@types/debug': ^4.1.7
       '@types/node': ^18.7.18
       '@types/polka': ^0.5.4
+      ansis: ^3.12.0
       bumpp: ^8.2.1
       debug: ^4.3.4
       eslint: ^8.23.1
       esno: ^0.16.3
-      picocolors: ^1.0.0
       playwright: ^1.25.2
       pnpm: ^7.12.0
       rimraf: ^3.0.2
@@ -25,8 +25,8 @@ importers:
       vite: ^3.1.2
       vitest: ^0.23.4
     dependencies:
+      ansis: 3.12.0
       debug: 4.3.4
-      picocolors: 1.0.0
       playwright: 1.25.2
       sirv: 2.0.2
       ufo: 0.8.5
@@ -1195,6 +1195,11 @@ packages:
     dependencies:
       color-convert: 2.0.1
     dev: true
+
+  /ansis/3.12.0:
+    resolution: {integrity: sha512-SxhlInpMkv9QCyI2yHyrhVrTF8dH93M/S86DT5f9brFgr92uJLOCg0RNmtx3YKWKcRmNAaU+gyUfHMdUiqxvFw==}
+    engines: {node: '>=14'}
+    dev: false
 
   /anymatch/3.1.2:
     resolution: {integrity: sha512-P43ePfOAIupkguHUycrc4qJ9kz8ZiuOUijaETwX7THt0Y/GNK7v0aa8rY816xWjZ7rJdA5XdMcpVFTKMq+RvWg==}
